@@ -127,6 +127,7 @@
           class:is-danger={$resourceForm.name.errors.length}
           type="text"
           placeholder="Resource Name"
+          data-cy="resourceName"
           bind:value={resource.name} />
         {#if $resourceForm.name.errors.length}
           <span class="icon is-small is-right">
@@ -150,6 +151,7 @@
           type="checkbox"
           name="trash"
           class="switch is-danger"
+          data-cy="deleteSwitch"
           bind:checked={resource.deleted} />
         <label class="label" for="trash">Trash Resource</label>
       </div>
@@ -166,6 +168,7 @@
           name="description"
           class="textarea"
           class:is-danger={$resourceForm.description.errors.length}
+          data-cy="description"
           bind:value={resource.description}
           placeholder="Description" />
       </div>
@@ -185,6 +188,7 @@
           autocomplete="tel"
           type="text"
           placeholder="Phone input"
+          data-cy="phone"
           bind:value={resource.phone} />
         <span class="icon is-small is-left">
           <i class="fas fa-phone" />
@@ -215,6 +219,7 @@
                 autocomplete="address-line1"
                 type="text"
                 placeholder="Address 1"
+                data-cy="address1"
                 bind:value={resource.address.address1} />
               {#if $resourceForm.address1.errors.length}
                 <span class="icon is-small is-right">
@@ -241,6 +246,7 @@
                 autocomplete="address-line1"
                 type="text"
                 placeholder="Address 2"
+                data-cy="address2"
                 bind:value={resource.address.address2} />
             </div>
           </div>
@@ -260,6 +266,7 @@
                 autocomplete="address-line1"
                 type="text"
                 placeholder="City"
+                data-cy="city"
                 bind:value={resource.address.city} />
               {#if $resourceForm.city.errors.length}
                 <span class="icon is-small is-right">
@@ -287,6 +294,7 @@
                 autocomplete="address-line1"
                 type="text"
                 placeholder="State"
+                data-cy="state"
                 bind:value={resource.address.state} />
               {#if $resourceForm.state.errors.length}
                 <span class="icon is-small is-right">
@@ -314,6 +322,7 @@
                 autocomplete="address-line1"
                 type="text"
                 placeholder="Address 1"
+                data-cy="zip"
                 bind:value={resource.address.zip} />
               {#if $resourceForm.zip.errors.length}
                 <span class="icon is-small is-right">
@@ -345,6 +354,7 @@
           autocomplete="tel"
           type="text"
           placeholder="Website"
+          data-cy="website"
           bind:value={resource.website} />
         <span class="icon is-small is-left">
           <i class="fas fa-wifi" />
@@ -417,10 +427,33 @@
     </div>
     <SubcategoryInput bind:value={resource.subcategories} {subcategories} />
 
+<<<<<<< HEAD
+=======
+    <p>
+      <label for="latitude">Latitude</label>
+      <input name="latitude" type="latitude" bind:value={resource.latitude} data-cy="latitude" />
+      {#if $resourceForm.latitude.errors.length}
+        <p>Invalid Latitude.</p>
+      {/if}
+      <label for="longitude">Longitude</label>
+      <input
+        name="longitude"
+        type="longitude"
+        data-cy="longitude"
+        bind:value={resource.longitude} />
+      {#if $resourceForm.longitude.errors.length}
+        <p>Invalid Longitude.</p>
+      {/if}
+    </p>
+    <p>
+      <SubcategoryInput bind:value={resource.subcategories} {subcategories} />
+    </p>
+>>>>>>> fill out create resource form
     <div class="buttons is-right">
       <button
         type="button"
         class="button is-success"
+        data-cy="submit"
         class:is-loading={isSaving}
         preventDefault
         on:click={() => dispatchSaveResource('dispatchSaveResource', resource)}
