@@ -427,28 +427,6 @@
     </div>
     <SubcategoryInput bind:value={resource.subcategories} {subcategories} />
 
-<<<<<<< HEAD
-=======
-    <p>
-      <label for="latitude">Latitude</label>
-      <input name="latitude" type="latitude" bind:value={resource.latitude} data-cy="latitude" />
-      {#if $resourceForm.latitude.errors.length}
-        <p>Invalid Latitude.</p>
-      {/if}
-      <label for="longitude">Longitude</label>
-      <input
-        name="longitude"
-        type="longitude"
-        data-cy="longitude"
-        bind:value={resource.longitude} />
-      {#if $resourceForm.longitude.errors.length}
-        <p>Invalid Longitude.</p>
-      {/if}
-    </p>
-    <p>
-      <SubcategoryInput bind:value={resource.subcategories} {subcategories} />
-    </p>
->>>>>>> fill out create resource form
     <div class="buttons is-right">
       <button
         type="button"
