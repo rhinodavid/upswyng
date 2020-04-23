@@ -4,7 +4,7 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "build": "yarn workspace @upswyng/upswyng-core build && sapper build --legacy && rollup --config worker.rollup.config.js && rollup --config bin.rollup.config.js",
+    "build": "yarn workspace @upswyng/upswyng-core build && sapper build --legacy && rollup --config worker.rollup.config.js && rollup --config bin.rollup.config.js && yarn workspace @upswyng/upswyng-web build",
     "cy:open": "yarn workspace @upswyng/upswyng-core build && cypress open",
     "cy:run": "yarn workspace @upswyng/upswyng-core build && cypress run",
     "data-setup-categories": "yarn workspace @upswyng/upswyng-core build && rollup --config data-pipeline.rollup.config.js && node __build__/setupCategories.js",

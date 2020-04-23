@@ -3,18 +3,21 @@
     const { categories } = await this.fetch("/api/categories").then(r =>
       r.json()
     );
-    const { uncategorizedResources } = await this.fetch(
-      "/api/resources/uncategorized"
-    ).then(r => r.json());
-    const { draftResources } = await this.fetch(
-      "/api/resources/drafts?include-deleted"
-    ).then(r => r.json());
-    const { draftResources: draftsForUser } = await this.fetch(
-      "/api/resources/drafts/mine",
-      {
-        credentials: "same-origin",
-      }
-    ).then(r => r.json());
+    const { uncategorizedResources } =
+      user && user.isAdmin
+        ? await this.fetch("/api/resources/uncategorized").then(r => r.json())
+        : { uncategorizedResources: null };
+    const { draftResources } =
+      user && user.isAdmin
+        ? await this.fetch("/api/resources/drafts?include-deleted").then(r =>
+            r.json()
+          )
+        : { draftResources: null };
+    const { draftResources: draftsForUser } = user
+      ? await this.fetch("/api/resources/drafts/mine", {
+          credentials: "same-origin",
+        }).then(r => r.json())
+      : { draftResources: null };
     return {
       categories,
       draftResources,
@@ -26,9 +29,9 @@
 </script>
 
 <script>
-  import ResourceSearch from "../../components/ResourceSearch.svelte";
+  import ResourceSearch from "../../../components/ResourceSearch.svelte";
   import { goto, stores } from "@sapper/app";
-  import { readFlashMessages } from "../../utility/flashMessage.ts";
+  import { readFlashMessages } from "../../../utility/flashMessage.ts";
 
   const { session } = stores();
   const flashMessages = readFlashMessages(session);
@@ -57,7 +60,7 @@
     <h1 class="title">Resources</h1>
     {#if user}
       <div class="content">
-        <a href="/resource/create" class="button is-large">
+        <a href="/providers/resource/create" class="button is-large">
           <span class="icon is-large">
             <i class="fas fa-plus" />
           </span>
@@ -66,7 +69,7 @@
       </div>
     {:else}
       <div class="notification">
-        <a href="/login">Log in</a>
+        <a href="/providers/login">Log in</a>
         to create a resource
       </div>
     {/if}
@@ -77,7 +80,9 @@
         <ul class="content">
           {#each categories as category}
             <li>
-              <a href={`/category/${category.stub}`}>{category.name}</a>
+              <a href={`/providers/category/${category.stub}`}>
+                {category.name}
+              </a>
             </li>
           {/each}
         </ul>
@@ -96,7 +101,7 @@
           <ul class="content">
             {#each draftResources as draftResource}
               <li>
-                <a href={`/resource/draft/${draftResource._id}`}>
+                <a href={`/providers/resource/draft/${draftResource._id}`}>
                   {draftResource.name}
                 </a>
               </li>
@@ -114,7 +119,9 @@
         <ul class="content">
           {#each draftsForUser as draft}
             <li>
-              <a href={`/resource/draft/${draft._id}`}>{draft.name}</a>
+              <a href={`/providers/resource/draft/${draft._id}`}>
+                {draft.name}
+              </a>
             </li>
           {/each}
         </ul>
@@ -126,7 +133,7 @@
       <ResourceSearch
         action="view"
         on:resourceClick={({ detail: resourceId }) => {
-          goto(`/resource/${resourceId}`);
+          goto(`/providers/resource/${resourceId}`);
         }} />
     </div>
 
@@ -139,7 +146,9 @@
         <ul class="content">
           {#each uncategorizedResources as resource}
             <li>
-              <a href={`/resource/${resource.resourceId}`}>{resource.name}</a>
+              <a href={`/providers/resource/${resource.resourceId}`}>
+                {resource.name}
+              </a>
             </li>
           {/each}
         </ul>

@@ -1,6 +1,6 @@
 <script context="module">
   export async function preload({ params, query }) {
-    const res = await this.fetch(`api/category/${params.stub}`);
+    const res = await this.fetch(`/api/category/${params.stub}`);
     const data = await res.json();
     if (res.status === 200) {
       return { category: data.category };

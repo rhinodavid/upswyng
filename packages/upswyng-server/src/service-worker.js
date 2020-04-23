@@ -48,7 +48,10 @@ self.addEventListener("fetch", event => {
     return;
 
   // ignore authentication (login/logout)
-  if (url.pathname.includes("/logout") || url.pathname.includes("/connect"))
+  if (
+    url.pathname.includes("/providers/logout") ||
+    url.pathname.includes("/connect")
+  )
     return;
 
   // reload page if we've just logged in or logged out

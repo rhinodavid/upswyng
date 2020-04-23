@@ -1,6 +1,6 @@
 <script>
   import { goto } from "@sapper/app";
-  import ResourceSearch from "../components/ResourceSearch.svelte";
+  import ResourceSearch from "../../components/ResourceSearch.svelte";
 </script>
 
 <style>
@@ -24,7 +24,7 @@
     <div class="container">
       <div class="columns is-variable is-6 is-vcentered">
         <div class="column">
-          <img alt="upswyng: Resources within reach" src="upswyng_light.svg" />
+          <img alt="upswyng: Resources within reach" src="/upswyng_light.svg" />
         </div>
         <div class="column">
           <h1 class="title">Upswyng Provider Portal</h1>
@@ -63,7 +63,7 @@
               See how the at-risk community can find your offerings.
             </p>
             <div class="column">
-              <a href="https://upswyng.netlify.com" class="button is-primary">
+              <a href="https://www.upswyng.org" class="button is-primary">
                 Visit the Web App
               </a>
             </div>

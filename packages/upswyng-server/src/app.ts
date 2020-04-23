@@ -33,7 +33,6 @@ export default function(options: TAppOptions) {
     .use(
       compression({ threshold: 0 }),
       cors(), // TODO: Lock this down to non-admin routes
-      sirv("static", { dev }),
       bodyParser.json({}),
       bodyParser.urlencoded({
         extended: true,
@@ -45,6 +44,7 @@ export default function(options: TAppOptions) {
         },
       })
     )
+    .use(sirv("static", { dev }))
     .use(
       compose([
         session({
@@ -64,7 +64,7 @@ export default function(options: TAppOptions) {
     )
     .use(userMiddleware)
     .get("/callback", oidc(grantConfig), (_req, res) => {
-      res.redirect("/?loggedin=true");
+      res.redirect("/providers/?loggedin=true");
     })
     .use((req, _res, next) => {
       dev && console.info(`~> Received ${req.method} on ${req.url}`);

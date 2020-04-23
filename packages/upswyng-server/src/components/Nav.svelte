@@ -18,8 +18,8 @@
 <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
   <div class="container">
     <div class="navbar-brand">
-      <a class="navbar-item" href="/">
-        <img alt="Upswyng: Resources within reach" src="upswyng_arrow.svg" />
+      <a class="navbar-item" href="/providers/">
+        <img alt="Upswyng: Resources within reach" src="/upswyng_arrow.svg" />
       </a>
       <!-- svelte-ignore a11y-missing-attribute -->
       <a
@@ -37,13 +37,16 @@
     </div>
     <div id="upswyng-main-nav" class="navbar-menu" class:is-active={toggled}>
       <div class="navbar-start">
-        <a class:has-text-weight-bold={!segment} class="navbar-item" href="/">
+        <a
+          class:has-text-weight-bold={!segment}
+          class="navbar-item"
+          href="/providers/">
           Home
         </a>
         <a
           class:has-text-weight-bold={segment === 'resource'}
           class="navbar-item"
-          href="resource"
+          href="/providers/resource"
           rel="prefetch">
           Service Providers
         </a>
@@ -54,23 +57,26 @@
 
           <div class="navbar-dropdown">
             {#if user && user.isAdmin}
-              <a class="navbar-item" href="alert" rel="prefetch">
+              <a class="navbar-item" href="/providers/alert" rel="prefetch">
                 <span>Alerts &nbsp;</span>
                 <span class="tag is-dark">Admin</span>
               </a>
-              <a class="navbar-item" href="resource/issues" rel="prefetch">
+              <a
+                class="navbar-item"
+                href="/providers/resource/issues"
+                rel="prefetch">
                 <span>Issues &nbsp;</span>
                 <span class="tag is-dark">Admin</span>
               </a>
-              <a class="navbar-item" href="eventlogs" rel="prefetch">
+              <a class="navbar-item" href="/providers/eventlogs" rel="prefetch">
                 <span>Event Logs &nbsp;</span>
                 <span class="tag is-dark">Admin</span>
               </a>
-              <a class="navbar-item" href="bot" rel="prefetch">
+              <a class="navbar-item" href="/providers/bot" rel="prefetch">
                 <span class="is-family-monospace">upswyngbot &nbsp;</span>
                 <span class="tag is-dark">Admin</span>
               </a>
-              <a class="navbar-item" href="users" rel="prefetch">
+              <a class="navbar-item" href="/providers/users" rel="prefetch">
                 <span>Users &nbsp;</span>
                 <span class="tag is-dark">Admin</span>
               </a>
@@ -116,11 +122,11 @@
         <div class="navbar-item">
           <div class="buttons">
             {#if !user}
-              <a class="button is-primary" href="login">
+              <a class="button is-primary" href="/providers/login">
                 <strong>Log In</strong>
               </a>
             {:else}
-              <a class="button" href="logout">
+              <a class="button" href="/providers/logout">
                 <strong>Log Out</strong>
               </a>
             {/if}

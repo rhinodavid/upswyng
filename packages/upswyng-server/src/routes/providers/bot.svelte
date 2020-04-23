@@ -1,14 +1,14 @@
 <script>
   import { camelCase } from "camel-case";
   import { onDestroy, onMount } from "svelte";
-  import Job from "./../components/Job.svelte";
+  import Job from "../../components/Job.svelte";
 
   let jobs = {}; // Record<string (job id), {job: TJob, jobtTimestamp?: number, updateTimestamp?: number}>
   let messageCounts;
   let readyStatePoller; // setInterval handle
   let redisMetrics;
   let ws;
-  let wsReadyState = WebSocket.CLOSED;
+  let wsReadyState;
 
   function dateReviver(key, value) {
     if (
@@ -21,6 +21,7 @@
   }
 
   onMount(async () => {
+    wsReadyState = WebSocket.CLOSED;
     const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
     ws = new WebSocket(`${protocol}//${window.location.host}`);
     ws.addEventListener("message", ({ data }) => {
@@ -206,7 +207,7 @@
         <div
           class="level-item has-text-weight-medium is-uppercase is-size-6
           has-text-grey">
-          {#if window}
+          {#if window && window.WebSocket}
             {#if wsReadyState === window.WebSocket.OPEN}
               <span class="has-text-info">Connected</span>
             {:else if wsReadyState === window.WebSocket.CONNECTING}
