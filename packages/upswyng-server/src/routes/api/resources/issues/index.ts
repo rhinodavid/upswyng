@@ -23,7 +23,8 @@ import { requireAdmin } from "../../../../utility/authHelpers";
 export async function post(req, res, _next) {
   try {
     requireAdmin(req);
-  } catch {
+  } catch (e) {
+    console.error(e);
     res.writeHead(401, {
       "Content-Type": "application/json",
     });

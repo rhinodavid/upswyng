@@ -4,6 +4,7 @@
   export async function preload({ params, query }, { user }) {
     if (!user || !user.isAdmin) {
       this.error(401, "You must be an admin to access this page.");
+      return;
     }
 
     const resourceIdToNameMap = new Map();
@@ -27,48 +28,49 @@
       return;
     }
 
-    if (resourceIssuesResponse.status !== 200) {
-      const { message } = await resourceIssuesResponse.json();
-      this.error(resourceIssuesResponse.status, message || "Unknown Error");
-    } else {
-      const {
-        resourceIssues,
-        count,
-        estimatedTotal,
-      } = await resourceIssuesResponse.json();
-      return await Promise.all(
-        // dedupe keys to keep from making many network requests/database fetches
-        Object.keys(
-          resourceIssues
-            .map(i => i.resourceId)
-            .reduce((result, id) => ({ ...result, [id]: null }), {})
-        ).map(async resourceId => {
-          const resourceName = await this.fetch(`/api/resource/${resourceId}`)
-            .then(response => {
-              if (response.status !== 200) {
-                throw new Error();
-              }
-              return response.json();
-            })
-            .then(({ resource }) => resource.name)
-            .catch(e => {
-              console.error(e.message);
-              return "<not found>";
-            });
-          return [resourceId, resourceName];
-        })
-      ).then(idNamePairs => {
-        idNamePairs.forEach(([resourceId, resourceName]) =>
-          resourceIdToNameMap.set(resourceId, resourceName)
-        );
-        return {
-          resourceIssues,
-          count,
-          estimatedTotal,
-          resourceIdToNameMap,
-        };
-      });
-    }
+    // if (resourceIssuesResponse.status !== 200) {
+    //   console.log(resourceIssuesResponse);
+    //   const { message } = await resourceIssuesResponse.json();
+    //   this.error(resourceIssuesResponse.status, message || "Unknown Error");
+    // } else {
+    //   const {
+    //     resourceIssues,
+    //     count,
+    //     estimatedTotal,
+    //   } = await resourceIssuesResponse.json();
+    //   return await Promise.all(
+    //     // dedupe keys to keep from making many network requests/database fetches
+    //     Object.keys(
+    //       resourceIssues
+    //         .map(i => i.resourceId)
+    //         .reduce((result, id) => ({ ...result, [id]: null }), {})
+    //     ).map(async resourceId => {
+    //       const resourceName = await this.fetch(`/api/resource/${resourceId}`)
+    //         .then(response => {
+    //           if (response.status !== 200) {
+    //             throw new Error();
+    //           }
+    //           return response.json();
+    //         })
+    //         .then(({ resource }) => resource.name)
+    //         .catch(e => {
+    //           console.error(e.message);
+    //           return "<not found>";
+    //         });
+    //       return [resourceId, resourceName];
+    //     })
+    //   ).then(idNamePairs => {
+    //     idNamePairs.forEach(([resourceId, resourceName]) =>
+    //       resourceIdToNameMap.set(resourceId, resourceName)
+    //     );
+    //     return {
+    //       resourceIssues,
+    //       count,
+    //       estimatedTotal,
+    //       resourceIdToNameMap,
+    //     };
+    //   });
+    // }
   }
 </script>
 
