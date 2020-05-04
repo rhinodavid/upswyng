@@ -57,7 +57,7 @@
     <h1 class="title">Resources</h1>
     {#if user}
       <div class="content">
-        <a href="/resource/create" class="button is-large">
+        <a href="resource/create" class="button is-large">
           <span class="icon is-large">
             <i class="fas fa-plus" />
           </span>
@@ -66,7 +66,7 @@
       </div>
     {:else}
       <div class="notification">
-        <a href="/login">Log in</a>
+        <a href="login">Log in</a>
         to create a resource
       </div>
     {/if}
@@ -77,7 +77,7 @@
         <ul class="content">
           {#each categories as category}
             <li>
-              <a href={`/category/${category.stub}`}>{category.name}</a>
+              <a href={`category/${category.stub}`}>{category.name}</a>
             </li>
           {/each}
         </ul>
@@ -96,7 +96,7 @@
           <ul class="content">
             {#each draftResources as draftResource}
               <li>
-                <a href={`/resource/draft/${draftResource._id}`}>
+                <a href={`resource/draft/${draftResource._id}`}>
                   {draftResource.name}
                 </a>
               </li>
@@ -114,7 +114,7 @@
         <ul class="content">
           {#each draftsForUser as draft}
             <li>
-              <a href={`/resource/draft/${draft._id}`}>{draft.name}</a>
+              <a href={`resource/draft/${draft._id}`}>{draft.name}</a>
             </li>
           {/each}
         </ul>
@@ -126,7 +126,7 @@
       <ResourceSearch
         action="view"
         on:resourceClick={({ detail: resourceId }) => {
-          goto(`/resource/${resourceId}`);
+          goto(`resource/${resourceId}`);
         }} />
     </div>
 
@@ -139,7 +139,7 @@
         <ul class="content">
           {#each uncategorizedResources as resource}
             <li>
-              <a href={`/resource/${resource.resourceId}`}>{resource.name}</a>
+              <a href={`resource/${resource.resourceId}`}>{resource.name}</a>
             </li>
           {/each}
         </ul>

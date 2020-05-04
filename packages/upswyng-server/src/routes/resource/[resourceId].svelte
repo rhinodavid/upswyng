@@ -94,7 +94,7 @@
               ? `A draft update of ${res.draftResource.name} was created`
               : "A draft update was created"
           );
-          goto("/resource");
+          goto("resource");
         } else {
           console.error(res);
           saveError = new Error(

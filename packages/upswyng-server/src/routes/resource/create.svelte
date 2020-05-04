@@ -67,7 +67,7 @@
               ? `A draft of ${res.draftResource.name} was created`
               : "A new draft was created"
           );
-          goto("/resource");
+          goto("./resource");
         } else {
           console.error(res);
           saveError = new Error(
