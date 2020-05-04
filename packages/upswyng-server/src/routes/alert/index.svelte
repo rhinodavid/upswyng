@@ -192,7 +192,7 @@
     {/each}
 
     <div class="content">
-      <a href="/alert/create" class="button is-large">
+      <a href="alert/create" class="button is-large">
         <span class="icon is-large">
           <i class="fas fa-plus" />
         </span>

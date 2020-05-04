@@ -343,7 +343,7 @@
                     <i class="fas fa-spinner spinner" />
                   </div>
                 {:then title}
-                  <a href={`/resource/${i.resourceId}`}>{title}</a>
+                  <a href={`../resource/${i.resourceId}`}>{title}</a>
                 {/await}
               {:else}
                 <div class="is-loading has-text-grey">
@@ -352,7 +352,7 @@
               {/if}
             </td>
             <td>
-              <a href={`/resource/issue/${i._id}`}>
+              <a href={`../resource/issue/${i._id}`}>
                 <span class="is-capitalized">{i.kind.replace(/_/g, ' ')}</span>
               </a>
             </td>

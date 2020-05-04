@@ -68,7 +68,7 @@
       <span class="tag is-dark">Admin</span>
     </h1>
     <p class="content has-text-weight-semibold">
-      <a href={`/resource/${resource.resourceId}`} rel="prefetch">
+      <a href={`../resource/${resource.resourceId}`} rel="prefetch">
         {resource.resourceId}
       </a>
     </p>

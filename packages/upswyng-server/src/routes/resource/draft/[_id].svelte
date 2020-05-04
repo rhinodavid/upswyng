@@ -88,7 +88,7 @@
             ? `The draft of ${draftResource.name} was deleted`
             : "The draft resource was deleted"
         );
-        goto("/resource");
+        goto("resource");
       })
       .catch(e => (deleteError = e))
       .finally(() => (isDeleting = false));
@@ -111,7 +111,7 @@
           "success",
           `The draft of ${draftResource.name} was approved`
         );
-        goto("/resource");
+        goto("resource");
       })
       .catch(e => (approveError = e))
       .finally(() => (isApproving = false));
@@ -131,7 +131,7 @@
       </h1>
       <p class="subtitle">
         Resource ID:
-        <a href={`/resource/${existingResource.resourceId}`}>
+        <a href={`../resource/${existingResource.resourceId}`}>
           {existingResource.resourceId}
         </a>
       </p>
