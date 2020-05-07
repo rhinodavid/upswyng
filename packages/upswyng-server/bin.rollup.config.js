@@ -1,9 +1,20 @@
+/**
+ * Rollup configuration used to build bin scripts
+ *
+ * To build all scripts:
+ * yarn workspace @upswyng/upswyng-server rollup -c bin.rollup.config.js
+ *
+ * To specify which scripts to build, set `TARGETS` env to a comma-separated
+ * list:
+ * TARGETS=addTestUsers,checkAlerts \
+ * yarn workspace @upswyng/upswyng-server rollup -c bin.rollup.config.js
+ */
+
 import { createEnv, readConfigFile } from "@pyoner/svelte-ts-preprocess";
 
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
 import pkg from "./package.json";
-import replace from "@rollup/plugin-replace";
 import resolve from "@rollup/plugin-node-resolve";
 import shebang from "rollup-plugin-add-shebang";
 import typescript from "rollup-plugin-typescript2";
@@ -29,7 +40,9 @@ const tsOpts = {
   tsconfig: "./tsconfig.build.json",
 };
 
-const targets = ["checkAlerts"];
+const targets = process.env.TARGETS
+  ? process.env.TARGETS.split(",")
+  : ["addTestUsers", "checkAlerts"];
 
 export default targets.map(target => ({
   input: `./src/bin/${target}.ts`,
