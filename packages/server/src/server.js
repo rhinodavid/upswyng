@@ -30,6 +30,7 @@ const {
 } = process.env;
 
 const { ALGOLIA_INDEX_NAME } = process.env;
+let GITHUB_WEBHOOKS_SECRET = process.env.GITHUB_WEBHOOKS_SECRET;
 
 if (dev && /heroku_23.*/.test(DATABASE_NAME)) {
   throw new Error(
@@ -42,6 +43,16 @@ if (dev && /prod/.test(ALGOLIA_INDEX_NAME)) {
     "😮 You're running in a dev environment but it appears you're using the production Algolia index." +
       "This can cause problems if it was not intentional."
   );
+}
+
+if (!GITHUB_WEBHOOKS_SECRET) {
+  if (!dev) {
+    throw new Error(
+      "🚨 Attempted to start the server in production without a `GITHUB_WEBHOOKS_SECRET`"
+    );
+  }
+  console.warn("🚧 STARTING the server with default `GITHUB_WEBHOOKS_SECRET`");
+  GITHUB_WEBHOOKS_SECRET = "default_github_webhooks_secret";
 }
 
 const grantConfig = {
@@ -101,6 +112,7 @@ mongoose
         mongooseConnection: mongoose.connection,
         sessionSecret: process.env.DATABASE_SESSION_SECRET || "default_secret",
         beta: process.env.BETA && process.env.BETA.toLowerCase() === "true",
+        githubWebhooksSecret: GITHUB_WEBHOOKS_SECRET,
       });
 
       if (!appInstance) {

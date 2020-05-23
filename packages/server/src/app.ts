@@ -10,6 +10,7 @@ import { compose } from "compose-middleware";
 import compression from "compression";
 import connectMongo from "connect-mongo";
 import cors from "cors";
+import { create as createGithubWebhooksMiddleware } from "./utility/GithubWebhookMiddleware";
 import express from "express";
 import grant from "grant-express";
 import morgan from "morgan";
@@ -24,10 +25,17 @@ interface TAppOptions {
   grantConfig: Record<string, any>; // see https://github.com/simov/grant#configuration
   sessionSecret: string;
   beta?: boolean; // if true, only requests from host `beta.upswyng.*` will go to the app; otherwise a placeholder is shown
+  githubWebhooksSecret: string;
 }
 
 export default function(options: TAppOptions) {
-  const { dev, grantConfig, mongooseConnection, sessionSecret } = options;
+  const {
+    dev,
+    grantConfig,
+    mongooseConnection,
+    sessionSecret,
+    githubWebhooksSecret,
+  } = options;
 
   const MongoStore = connectMongo(session);
 
@@ -74,6 +82,7 @@ export default function(options: TAppOptions) {
       })
     )
     .use(userMiddleware)
+    .use(createGithubWebhooksMiddleware(githubWebhooksSecret, dev))
     .get("/callback", oidc(grantConfig), (_req, res) => {
       res.redirect("/provider/?loggedin=true");
     });
