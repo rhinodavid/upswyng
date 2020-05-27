@@ -13,6 +13,8 @@ import {
   TJobCheckNewAlertsResult,
   TJobDestroyAllSessionsData,
   TJobDestroyAllSessionsResult,
+  TJobJobrunnerProcessScriptData,
+  TJobJobrunnerProcessScriptResult,
   TJobSyncAlgoliaData,
   TJobSyncAlgoliaResult,
 } from "./worker/workerTypes";
@@ -28,6 +30,7 @@ import mq from "./worker/mq";
 import { processJobCheckLinks } from "./worker/processJobCheckLinks";
 import { processJobCheckNewAlerts } from "./worker/processJobCheckNewAlerts";
 import { processJobDestroyAllSessions } from "./worker/processJobDestroyAllSessions";
+import { processJobJobrunnerProcessScript } from "./worker/processJobJobrunnerProcessScript";
 import { processJobSyncAlgolia } from "./worker/processJobSyncAlgolia";
 import { processJobTest } from "./worker/processJobTest";
 import throng from "throng";
@@ -102,6 +105,13 @@ async function start() {
             ALGOLIA_APP_ID,
             ALGOLIA_INDEX_NAME,
             ALGOLIA_WRITE_API_KEY
+          );
+        case JobKind.JobrunnerProcessScript:
+          return await processJobJobrunnerProcessScript(
+            job as Job<
+              TJobJobrunnerProcessScriptData,
+              TJobJobrunnerProcessScriptResult
+            > // , TODO: inject envars for script directory, etc
           );
         default:
           // TODO: Implement other jobs and then put an exhaustive requirement here

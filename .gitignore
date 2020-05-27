@@ -44,6 +44,9 @@ packages/web/cypress/screenshots/**/*(failed).png
 *.orig.*
 *.p12
 *.p8
+*.tmp.ts
+*.tmp.js
+*.rdb
 report.*.json
 npm-debug.*
 npm-debug.log*

@@ -2,6 +2,8 @@
  * Type definitions for server worker jobs.
  */
 
+import { TCommit } from "../utility/GithubWebhookMiddleware";
+
 /**
  * Represents each kind of task the worker can execute
  */
@@ -9,8 +11,44 @@ export enum JobKind {
   CheckLinks = "check_links", // visit the websites listed in Resources and check for broken URLs
   CheckNewAlerts = "check_new_alerts", // look for alerts whose start time has come and process them
   DestroyAllSessions = "destroy_all_sessions", // wipes all the user sessions from the mongodb collection
+  JobrunnerProcessScript = "jobrunner_process_script_(step_1)", // a new script has been uploaded for the jobrunner to run. fetch and build it
+  JobrunnerExecuteScript = "jobrunner_execute_script_(step_2)", // execute a script build in step 1
   Test = "test", // no-op job used for testing the worker/queue
   SyncAlgolia = "sync_algolia", // update algolia index with latest resources
+}
+
+// PROCESS (fetch/transpile) -> EXECUTE -> CLEANUP (remove source/write result)
+
+export interface TJobJobrunnerProcessScriptData {
+  kind: JobKind.JobrunnerProcessScript;
+  filename: string;
+  repository: string; // ex: codeforboulder/upswyng
+  commit: TCommit;
+  userId?: string; // _id of user who started this job (prob the bot)
+}
+
+export interface TJobJobrunnerProcessScriptResult {
+  kind: JobKind.JobrunnerProcessScript;
+  source: string; // the sourcecode of the script
+  nodeScript: string; // the generated node script from the source
+}
+
+export interface TJobJobrunnerExecuteScriptData {
+  kind: JobKind.JobrunnerExecuteScript;
+  filename: string;
+  repository: string; // ex: codeforboulder/upswyng
+  commit: TCommit;
+  userId?: string; // _id of user who started this job (prob the bot)
+  processJobId: string; // id of the step 1 job
+  nodeScript: string; // generated in step 1
+}
+
+export interface TJobJobrunnerExecuteScriptResult {
+  kind: JobKind.JobrunnerExecuteScript;
+  output: string; // the recorded stdout/stderr from script execution
+  startTime: number;
+  endTime: number;
+  exitCode: number;
 }
 
 // DestroyAllSessions
@@ -89,11 +127,16 @@ export type TJobData =
   | TJobCheckLinksData
   | TJobCheckNewAlertsData
   | TJobDestroyAllSessionsData
+  | TJobJobrunnerProcessScriptData
   | TJobTestData
+  | TJobJobrunnerExecuteScriptData
   | TJobSyncAlgoliaData;
+
 export type TJobResult =
   | TJobCheckLinksResult
   | TJobCheckNewAlertsResult
   | TJobDestroyAllSessionsResult
   | TJobTestResult
-  | TJobSyncAlgoliaResult;
+  | TJobJobrunnerExecuteScriptResult
+  | TJobSyncAlgoliaResult
+  | TJobJobrunnerProcessScriptResult;

@@ -1,5 +1,13 @@
 import { Webhooks } from "@octokit/webhooks";
 import http from "http";
+import mq from "../worker/mq";
+
+export type TWebhookPayloadPush = Webhooks.WebhookPayloadPush;
+export type TCommit = Webhooks.WebhookPayloadCheckSuiteCheckSuiteHeadCommit & {
+  added: string[]; // ex: [ 'packages/server/src/utility/GithubWebhookMiddleware.ts' ]
+  modified: string[];
+  removed: string[];
+};
 
 let middleware: (
   request: http.IncomingMessage,
@@ -7,11 +15,61 @@ let middleware: (
   next?: (err?: any) => void
 ) => void | Promise<void>;
 
-async function handlePushEvent(
-  event: Webhooks.WebhookPayloadPush
-): Promise<void> {
-  console.info("Handling push event");
-  console.log(event);
+async function handlePushEvent(event: TWebhookPayloadPush): Promise<void> {
+  const GITHUB_REPO = "rhinodavid/upswyng";
+  const BRANCH_FOR_SCRIPTS = "github_webhook";
+
+  const repository = event.repository.full_name; // ex: "codeforboulder/upswyng"
+  const branch: string = (function computeBranch(
+    event: TWebhookPayloadPush
+  ): string {
+    const ref = event.ref; // ex: "refs/heads/github_webhook"
+    const refMatch = ref.match(/refs\/heads\/(?<branch>\w+)/);
+    if (!refMatch) {
+      throw new Error(`Received unexpected ref format: ${ref}`);
+    }
+    return refMatch.groups.branch;
+  })(event);
+
+  if (branch !== BRANCH_FOR_SCRIPTS || repository !== GITHUB_REPO) {
+    // This isn't a commit we care about
+    return;
+  }
+
+  // this is the repo and branch we're worried about
+  // check out the added files to see if we're concerened with them
+
+  const headCommit = event.head_commit as TCommit;
+  console.log("HEAD COMMIT");
+  console.log(headCommit);
+  // TODO: Parameterize regex
+  const addedSourceFiles = headCommit.added.filter(filename =>
+    /packages\/server\/src\/jobrunner\/exec\/.*\.ts/.test(filename)
+  );
+
+  if (!addedSourceFiles.length) {
+    // no applicable files were added in commit
+    return;
+  }
+
+  addedSourceFiles.forEach(async filename => {
+    try {
+      const job = await mq.addJobJobrunnerProcessScript(
+        undefined,
+        process.env.BOT_USER_ID,
+        filename,
+        repository,
+        headCommit
+      );
+      console.info(
+        `Added Jobrunner Process Script job to the queue: ${job.name}`
+      );
+    } catch (e) {
+      console.error(
+        `Failed to add a Jobrunner Process Script job to the queue: ${e}`
+      );
+    }
+  });
 }
 
 export function create(

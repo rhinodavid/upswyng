@@ -14,6 +14,10 @@ import {
   TJobData,
   TJobDestroyAllSessionsData,
   TJobDestroyAllSessionsResult,
+  TJobJobrunnerExecuteScriptData,
+  TJobJobrunnerExecuteScriptResult,
+  TJobJobrunnerProcessScriptData,
+  TJobJobrunnerProcessScriptResult,
   TJobSyncAlgoliaData,
   TJobSyncAlgoliaResult,
   TJobTestData,
@@ -21,6 +25,7 @@ import {
 } from "./workerTypes";
 
 import { ObjectID } from "bson";
+import { TCommit } from "../utility/GithubWebhookMiddleware";
 import getName from "@afuggini/namegenerator";
 import parseRedisUrl from "../utility/parseRedisUrl";
 
@@ -134,6 +139,55 @@ async function addJobDestroyAllSessions(
   );
 }
 
+async function addJobJobrunnerProcessScript(
+  name: string = getName("-"),
+  userId /* (expect the upswyng bot) */,
+  filename: string,
+  repository: string,
+  commit: TCommit
+): Promise<
+  Job<TJobJobrunnerProcessScriptData, TJobJobrunnerProcessScriptResult>
+> {
+  return queue.add(
+    name,
+    {
+      kind: JobKind.JobrunnerProcessScript,
+      userId,
+      filename,
+      repository,
+      commit,
+    },
+    {
+      priority: 50,
+      jobId: new ObjectID().toHexString(),
+    }
+  );
+}
+
+async function addJobJobrunnerExecuteScript(
+  userId /* (expect the upswyng bot) */,
+  options: {
+    filename: string;
+    repository: string; // ex: codeforboulder/upswyng
+    commit: TCommit;
+    processJobId: string; // id of the step 1 job
+    nodeScript: string;
+    name?: string;
+  }
+): Promise<
+  Job<TJobJobrunnerExecuteScriptData, TJobJobrunnerExecuteScriptResult>
+> {
+  const name = options.name ?? getName("-");
+  return queue.add(
+    name,
+    { userId, kind: JobKind.JobrunnerExecuteScript, ...options },
+    {
+      priority: 50,
+      jobId: new ObjectID().toHexString(),
+    }
+  );
+}
+
 async function addJobSyncAlgolia(
   name: string = getName("-"),
   userId
@@ -149,10 +203,12 @@ async function addJobSyncAlgolia(
 }
 
 const mq = {
-  addJobSyncAlgolia,
   addJobCheckLinks,
   addJobCheckNewAlerts,
   addJobDestroyAllSessions,
+  addJobJobrunnerExecuteScript,
+  addJobJobrunnerProcessScript,
+  addJobSyncAlgolia,
   addJobTest,
   connection,
   getCounts,

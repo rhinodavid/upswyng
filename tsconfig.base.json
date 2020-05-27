@@ -10,5 +10,9 @@
     "resolveJsonModule": true,
     "types": ["jest"]
   },
-  "exclude": ["node_modules", "packages/**/cypress/**/*"]
+  "exclude": [
+    "node_modules",
+    "packages/**/cypress/**/*",
+    "packages/**/*.rollup.config.js"
+  ]
 }

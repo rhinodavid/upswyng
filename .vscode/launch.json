@@ -18,6 +18,45 @@
       "args": ["dev"],
       "console": "integratedTerminal",
       "autoAttachChildProcesses": true
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug Worker",
+      "protocol": "inspector",
+      "cwd": "${workspaceFolder}/packages/server",
+      "program": "${workspaceFolder}/packages/server/__build__/worker.js",
+      "args": [],
+      "console": "integratedTerminal",
+      "autoAttachChildProcesses": true
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Server Unit Tests",
+      "cwd": "${workspaceFolder}/packages/server",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": ["--runInBand"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "disableOptimisticBPs": true,
+      "windows": {
+        "program": "${workspaceFolder}/node_modules/jest/bin/jest"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Jest Current File",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": ["${relativeFile}", "--config", "packages/server/jest.config.js"],
+      "internalConsoleOptions": "neverOpen",
+      "disableOptimisticBPs": true,
+      "console": "integratedTerminal",
+      "autoAttachChildProcesses": true,
+      "windows": {
+        "program": "${workspaceFolder}/node_modules/jest/bin/jest"
+      }
     }
   ]
 }
