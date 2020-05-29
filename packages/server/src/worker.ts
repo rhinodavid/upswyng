@@ -13,6 +13,10 @@ import {
   TJobCheckNewAlertsResult,
   TJobDestroyAllSessionsData,
   TJobDestroyAllSessionsResult,
+  TJobJobrunnerCleanupScriptData,
+  TJobJobrunnerCleanupScriptResult,
+  TJobJobrunnerExecuteScriptData,
+  TJobJobrunnerExecuteScriptResult,
   TJobJobrunnerProcessScriptData,
   TJobJobrunnerProcessScriptResult,
   TJobSyncAlgoliaData,
@@ -30,6 +34,8 @@ import mq from "./worker/mq";
 import { processJobCheckLinks } from "./worker/processJobCheckLinks";
 import { processJobCheckNewAlerts } from "./worker/processJobCheckNewAlerts";
 import { processJobDestroyAllSessions } from "./worker/processJobDestroyAllSessions";
+import { processJobJobrunnerCleanupScript } from "./worker/processJobJobrunnerCleanupScript";
+import { processJobJobrunnerExecuteScript } from "./worker/processJobJobrunnerExecuteScript";
 import { processJobJobrunnerProcessScript } from "./worker/processJobJobrunnerProcessScript";
 import { processJobSyncAlgolia } from "./worker/processJobSyncAlgolia";
 import { processJobTest } from "./worker/processJobTest";
@@ -46,7 +52,23 @@ const {
   ALGOLIA_APP_ID,
   ALGOLIA_WRITE_API_KEY,
   ALGOLIA_INDEX_NAME,
+
+  GITHUB_APP_ID,
+  GITHUB_PRIVATE_KEY,
+  NODE_ENV,
 } = process.env;
+
+if (!GITHUB_APP_ID || !GITHUB_PRIVATE_KEY) {
+  if (NODE_ENV === "development") {
+    console.warn(
+      "🐙 No GitHub credentials provided; GitHub integration will not be active"
+    );
+  } else {
+    throw new Error(
+      "Attempted to start worker in production with no GitHub access tokens"
+    );
+  }
+}
 
 mongoose
   .connect(DATABASE_URL, {
@@ -111,7 +133,23 @@ async function start() {
             job as Job<
               TJobJobrunnerProcessScriptData,
               TJobJobrunnerProcessScriptResult
-            > // , TODO: inject envars for script directory, etc
+            >
+          );
+        case JobKind.JobrunnerExecuteScript:
+          return await processJobJobrunnerExecuteScript(
+            job as Job<
+              TJobJobrunnerExecuteScriptData,
+              TJobJobrunnerExecuteScriptResult
+            >
+          );
+        case JobKind.JobrunnerCleanupScript:
+          return await processJobJobrunnerCleanupScript(
+            job as Job<
+              TJobJobrunnerCleanupScriptData,
+              TJobJobrunnerCleanupScriptResult
+            >,
+            GITHUB_APP_ID ? parseInt(GITHUB_APP_ID) : null,
+            GITHUB_PRIVATE_KEY
           );
         default:
           // TODO: Implement other jobs and then put an exhaustive requirement here

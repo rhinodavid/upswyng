@@ -13,6 +13,7 @@ export enum JobKind {
   DestroyAllSessions = "destroy_all_sessions", // wipes all the user sessions from the mongodb collection
   JobrunnerProcessScript = "jobrunner_process_script_(step_1)", // a new script has been uploaded for the jobrunner to run. fetch and build it
   JobrunnerExecuteScript = "jobrunner_execute_script_(step_2)", // execute a script build in step 1
+  JobrunnerCleanupScript = "jobrunner_cleanup_script_(step_3)", // remove source from repo and commit execution record
   Test = "test", // no-op job used for testing the worker/queue
   SyncAlgolia = "sync_algolia", // update algolia index with latest resources
 }
@@ -49,6 +50,27 @@ export interface TJobJobrunnerExecuteScriptResult {
   startTime: number;
   endTime: number;
   exitCode: number;
+}
+
+export interface TJobJobrunnerCleanupScriptData {
+  commit: TCommit;
+  endTime: number; // generated in step 2
+  exitCode: number; // generated in step 2
+  filename: string;
+  kind: JobKind.JobrunnerCleanupScript;
+  nodeScript: string; // generated in step 1
+  output: string; // generated in step 2
+  processJobId: string; // id of the step 1 job
+  executeJobId: string; // id of the step 2 job
+  repository: string; // ex: codeforboulder/upswyng
+  startTime: number; // generated in step 2
+  userId?: string; // _id of user who started this job (prob the bot)
+}
+
+export interface TJobJobrunnerCleanupScriptResult {
+  kind: JobKind.JobrunnerCleanupScript;
+  sourceDeleteCommitUrl: string; // github url of commit which removes source file
+  resultCommitUrl: string; // github url of commit which adds result file
 }
 
 // DestroyAllSessions
@@ -129,12 +151,14 @@ export type TJobData =
   | TJobDestroyAllSessionsData
   | TJobJobrunnerProcessScriptData
   | TJobTestData
+  | TJobJobrunnerCleanupScriptData
   | TJobJobrunnerExecuteScriptData
   | TJobSyncAlgoliaData;
 
 export type TJobResult =
   | TJobCheckLinksResult
   | TJobCheckNewAlertsResult
+  | TJobJobrunnerCleanupScriptResult
   | TJobDestroyAllSessionsResult
   | TJobTestResult
   | TJobJobrunnerExecuteScriptResult

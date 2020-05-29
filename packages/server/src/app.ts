@@ -53,7 +53,7 @@ export default function(options: TAppOptions) {
         // retain raw body for use with Slack verification
         verify: (req, _res, buf, encoding) => {
           if (buf && buf.length) {
-            (req as any).rawBody = buf.toString(encoding || "utf8");
+            (req as any).rawBody = buf;
           }
         },
       })

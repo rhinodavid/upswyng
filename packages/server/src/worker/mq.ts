@@ -14,6 +14,8 @@ import {
   TJobData,
   TJobDestroyAllSessionsData,
   TJobDestroyAllSessionsResult,
+  TJobJobrunnerCleanupScriptData,
+  TJobJobrunnerCleanupScriptResult,
   TJobJobrunnerExecuteScriptData,
   TJobJobrunnerExecuteScriptResult,
   TJobJobrunnerProcessScriptData,
@@ -188,6 +190,35 @@ async function addJobJobrunnerExecuteScript(
   );
 }
 
+async function addJobJobrunnerCleanupScript(
+  userId /* (expect the upswyng bot) */,
+  options: {
+    executeJobId: string;
+    commit: TCommit;
+    endTime: number; // generated in step 2
+    exitCode: number; // generated in step 2
+    filename: string;
+    nodeScript: string; // generated in step 1
+    output: string; // generated in step 2
+    processJobId: string; // id of the step 1 job
+    repository: string; // ex: codeforboulder/upswyng
+    startTime: number; // generated in step 2
+    name?: string;
+  }
+): Promise<
+  Job<TJobJobrunnerCleanupScriptData, TJobJobrunnerCleanupScriptResult>
+> {
+  const name = options.name ?? getName("-");
+  return queue.add(
+    name,
+    { userId, kind: JobKind.JobrunnerCleanupScript, ...options },
+    {
+      priority: 50,
+      jobId: new ObjectID().toHexString(),
+    }
+  );
+}
+
 async function addJobSyncAlgolia(
   name: string = getName("-"),
   userId
@@ -206,6 +237,7 @@ const mq = {
   addJobCheckLinks,
   addJobCheckNewAlerts,
   addJobDestroyAllSessions,
+  addJobJobrunnerCleanupScript,
   addJobJobrunnerExecuteScript,
   addJobJobrunnerProcessScript,
   addJobSyncAlgolia,

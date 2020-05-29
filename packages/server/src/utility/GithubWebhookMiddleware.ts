@@ -4,6 +4,7 @@ import mq from "../worker/mq";
 
 export type TWebhookPayloadPush = Webhooks.WebhookPayloadPush;
 export type TCommit = Webhooks.WebhookPayloadCheckSuiteCheckSuiteHeadCommit & {
+  url: string;
   added: string[]; // ex: [ 'packages/server/src/utility/GithubWebhookMiddleware.ts' ]
   modified: string[];
   removed: string[];

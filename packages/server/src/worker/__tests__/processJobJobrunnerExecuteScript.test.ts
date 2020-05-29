@@ -97,16 +97,21 @@ describe("processJobJobrunnerExecuteScript.ts", () => {
     expect(result.exitCode).toEqual(0);
     expect(result.startTime).toBeLessThan(result.endTime);
 
-    // expect(mq.addJobJobrunnerExecuteScript).toHaveBeenCalledWith(
-    //   "5e92431914c0ffc98b4f8e6c",
-    //   {
-    //     filename: jobData.filename,
-    //     repository: jobData.repository,
-    //     commit: jobData.commit,
-    //     processJobId: job.id,
-    //     nodeScript: result.source,
-    //   }
-    // );
+    expect(mq.addJobJobrunnerCleanupScript).toHaveBeenCalledWith(
+      "5e92431914c0ffc98b4f8e6c",
+      {
+        commit: job.data.commit,
+        endTime: result.endTime,
+        executeJobId: job.id,
+        exitCode: result.exitCode,
+        filename: job.data.filename,
+        nodeScript: job.data.nodeScript,
+        output: result.output,
+        processJobId: job.data.processJobId,
+        repository: job.data.repository,
+        startTime: result.startTime,
+      }
+    );
   });
 
   it("should execute a script with a bug", async () => {

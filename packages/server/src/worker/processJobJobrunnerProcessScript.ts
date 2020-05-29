@@ -108,7 +108,6 @@ export async function processJobJobrunnerProcessScript(
   //   installationId,
   // });
 
-  // example response: https://developer.github.com/v3/repos/commits/#response-1
   const r = await request(
     endpoint("GET /repos/:owner/:repo/commits/:ref", {
       headers: {

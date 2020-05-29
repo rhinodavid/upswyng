@@ -9,6 +9,7 @@ import {
 
 import { Job } from "bullmq";
 import fs from "fs";
+import mq from "../worker/mq";
 import path from "path";
 import queue from "./mq";
 import { spawn } from "child_process";
@@ -62,14 +63,29 @@ export async function processJobJobrunnerExecuteScript(
       } catch (e) {
         console.error(`Failed to delete temp file at ${tempFileName}`);
       }
+      const endTime = Date.now();
+      const exitCode = parseInt(code.toString());
 
-      // TODO: make follow-on job
+      mq.addJobJobrunnerCleanupScript(job.data.userId, {
+        commit: job.data.commit,
+        endTime,
+        exitCode,
+        filename: job.data.filename,
+        nodeScript,
+        output,
+        processJobId: job.data.processJobId,
+        executeJobId: job.id,
+        repository: job.data.repository,
+        startTime,
+      });
+
       job.updateProgress(100);
+
       resolve({
         kind: JobKind.JobrunnerExecuteScript,
         output,
         startTime,
-        endTime: Date.now(),
+        endTime,
         exitCode: parseInt(code.toString()),
       });
     });
