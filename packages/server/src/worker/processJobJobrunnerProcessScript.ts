@@ -162,7 +162,7 @@ export async function processJobJobrunnerProcessScript(
     repository: job.data.repository,
     commit: job.data.commit,
     processJobId: job.id,
-    nodeScript: source,
+    nodeScript: output,
   });
 
   job.updateProgress(100);

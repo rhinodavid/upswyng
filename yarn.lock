@@ -3781,10 +3781,10 @@ boolbase@^1.0.0, boolbase@~1.0.0:
   resolved "https://registry.yarnpkg.com/boolbase/-/boolbase-1.0.0.tgz#68dff5fbe60c51eb37725ea9e3ed310dcc1e776e"
   integrity sha1-aN/1++YMUes3cl6p4+0xDcwed24=
 
-botbanner@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/botbanner/-/botbanner-1.0.1.tgz#f76c282426bbc664dfb0add570ff6af4eba7245c"
-  integrity sha512-0OUGA1f5D1LD5kBClu2/HiWyQ6JVA3D7jYfZWpNQWAbgAmJSYVIggaooIx6rb3WLG3lWLLr44nWLnQi6RNWAnw==
+botbanner@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/botbanner/-/botbanner-1.0.3.tgz#87331ad6e02d8eb5d31fcec192bdf5c9dcb78d20"
+  integrity sha512-wkFCuNG3P5SREHtODCt6fdqU3OECJgScGD7MMXfcR0KTQnFUrPC63qUSDjK641C96AcLBu1IOnRufk05DhZ8Hg==
   dependencies:
     asciibots "^1.0.6"
 

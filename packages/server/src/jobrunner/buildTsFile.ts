@@ -15,8 +15,8 @@ async function buildTsFile(source: string, jobName: string): Promise<string> {
   const tmpFile = `${__dirname}/${jobName}.tmp.ts`;
   fs.writeFileSync(tmpFile, source);
   const configPath = path.resolve(__dirname).match(/__build__$/)
-    ? path.resolve(__dirname, "../../..", "jobrunner.rollup.config.mjs")
-    : path.resolve(__dirname, "../../../..", "jobrunner.rollup.config.mjs");
+    ? path.resolve(__dirname, "..", "jobrunner.rollup.config.js")
+    : path.resolve(__dirname, "../..", "jobrunner.rollup.config.js");
   return loadConfigFile(configPath, {}).then(async ({ options }) => {
     options = {
       ...options[0],

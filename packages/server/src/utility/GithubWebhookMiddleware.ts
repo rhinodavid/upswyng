@@ -18,7 +18,7 @@ let middleware: (
 
 async function handlePushEvent(event: TWebhookPayloadPush): Promise<void> {
   const GITHUB_REPO = "rhinodavid/upswyng";
-  const BRANCH_FOR_SCRIPTS = "github_webhook";
+  const BRANCH_FOR_SCRIPTS = "master";
 
   const repository = event.repository.full_name; // ex: "codeforboulder/upswyng"
   const branch: string = (function computeBranch(
@@ -34,6 +34,7 @@ async function handlePushEvent(event: TWebhookPayloadPush): Promise<void> {
 
   if (branch !== BRANCH_FOR_SCRIPTS || repository !== GITHUB_REPO) {
     // This isn't a commit we care about
+    console.info(`Passing up ${branch} ${repository}`);
     return;
   }
 
@@ -50,6 +51,7 @@ async function handlePushEvent(event: TWebhookPayloadPush): Promise<void> {
 
   if (!addedSourceFiles.length) {
     // no applicable files were added in commit
+    console.info(`Passing up for source files: ${addedSourceFiles}`);
     return;
   }
 

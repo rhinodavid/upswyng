@@ -7,37 +7,7 @@ import {
 import { App } from "@octokit/app";
 import { Job } from "bullmq";
 import createBanner from "botbanner";
-import { endpoint } from "@octokit/endpoint";
 import { request } from "@octokit/request";
-
-const APP_ID = 66587;
-const PRIVATE_KEY = `-----BEGIN RSA PRIVATE KEY-----
-MIIEowIBAAKCAQEAoXuVyCZCa7O0ZXvgSbX+j4aChP0UZEvwesWPVOwFOqNjFrfd
-OzFM89Sk/0pmMfqTCb6R8Stw15/lKsr4Le90PTRWfXc5MPwhbdzieHTAB3AoT/Yn
-bkCR7lF3ug/pI2KYZDfpgG1gHlKknReMnd7PNDRsnAIH4ZIhtzzlcq60h0xz+xVJ
-Q9BxZXTe7NuT8G58ljS11G0z1lemDwtG8xmnQJPT8JwwaEgwmszMDsvRgiGu/kUY
-6aUR3AekarWWqS18psdJrLOWlgbjbHIUn3UvrnP+HPCs6RNTk++lwMlwwZK1PhH+
-nNUsKqLZfFzV7l89o8P3KCDIogncHi0C2dsvRwIDAQABAoIBAB8qIrYF7Dus6tvL
-FHYlUYORig7waMcSgM6w4gCZrEisz6rKwT9zPE6yc0Vxrldm7Ims5a2NnLGAglHH
-6i2zUNOfDjIYmEkD38+8GVj17zmAQ8dq0iFNBNzhjCG0gGH73T06LS5D7ZDskihf
-KxwsrAB/PZa+LZczBJ7AeeewH9ccc6PGByosnaeK4cuPhStIHipHEatsf1M+wMjZ
-de9N2KRnpJF+0BzFl/z7tqGHndrSS81jDwm/jvG6C//UESpdX3EWpIOH1a2WGALZ
-TvsfpHJGS4dwJluGfd5jEttEAyoEyGlV2zXroDveuXiz9GeK60REJ6lEVUtVDm75
-TZu6OgECgYEA0NwqT1OoCFLJhKMnZo1kqTeubWoPX3MAPtxLhIDWFVF5KYw5zLxB
-nDnVmULZyOf/3MuJlaRIl4Xpk1JqW0XNNiSUHSIt0TrESSnlmxjsYn8Lx0lgvpes
-Zobtq5/+mUx8F4jHr89AjwRuf6P3m4Jj50M93qy5gxdmvqYhwTCq7WECgYEAxe37
-wb8uPj263sW1yCDd6lBU0QclGduwYQ2fj7+/mqHcd6/vEVe12H8CItJ1NBwnMUDX
-wnxID8PhjbzOXo6jmUhFMioXJzXHlwCekrIelr2FFLTiZO7a1aKa+A6EmVGg2VV3
-jeBjGlNm7LiMeNptRjOFXlKuD6DF5I1sUUP9dacCgYEAuhOszkfl6KR5TWZecAuA
-pxIooOphD9TRXy+9SCvQj+WqYM3BoRoICjushYL9rPSlC/16couO8RApbUt73h1u
-GtKz8tDEqSgGQHjHS0sFLyupPr+tJaDTw/RqQwGkPsfZts3xujyXc9Oq7qUSsMWW
-ZC+QK5cPIC/1Jd21LP1DC4ECgYAgJjCvXrNPLs2so6aMNDJ3fcbZEPUIxzNWAFV7
-juS7ZDEgS7ZkNb/2w2KAb3jUFwKSsHqbP36g+OspD5Lhrv+JxUBgDpAmMUkTEOmw
-4DexumTkYSEozddDvh63zfvhv22F/6jkpZ7TRtq/9pXyh2AaeAHguUNGjJG4NvRy
-Gr4PnwKBgCjf2u7VbDqowwh5bdDWJPMIe92ulVpdU73JCxxW6IkmELEOFx5KJNhi
-uUd3CvnJ+suhr7WCCnTlH1N03dbAPfk/w9GVdcFmvpTXOuKSTKk8oFWo8wlx6SBK
-74JPKoXVzfLgCy1NnBXmehn16vdL4EyDv8gmkfEKygJnGGtVGbRU
------END RSA PRIVATE KEY-----`;
 
 function createOutput(
   commitUrl: string,
@@ -64,7 +34,7 @@ function createOutput(
     { comment: true }
   );
 
-  let result = "/* eslint-disable */";
+  let result = "/* eslint-disable */\n\n";
   result += banner;
   result += "\n/*\n";
   if (exitCode !== 0) {
@@ -138,8 +108,8 @@ let installationId: number | null = null;
  */
 export async function processJobJobrunnerCleanupScript(
   job: Job<TJobJobrunnerCleanupScriptData, TJobJobrunnerCleanupScriptResult>,
-  appId: number = APP_ID,
-  privateKey: string = PRIVATE_KEY
+  appId: number,
+  privateKey: string
   /* add github credentials */
 ): Promise<TJobJobrunnerCleanupScriptResult> {
   if (!appId || !privateKey) {
@@ -156,19 +126,18 @@ export async function processJobJobrunnerCleanupScript(
   }
   const { owner, repo } = repositoryMatch.groups;
 
-  if (githubApp || installationId) {
-    setupGithubApp(appId, privateKey, owner, repo)
-      .then(({ app: _app, installationId: _installationId }) => {
-        githubApp = _app;
-        installationId = _installationId;
-        console.info("🐙 Successfully authenticated with GitHub");
-      })
-      .catch(error => {
-        console.info("👎 Failed to authenticate with GitHub:\n", error);
-      });
+  if (!githubApp || !installationId) {
+    try {
+      const result = await setupGithubApp(appId, privateKey, owner, repo);
+      githubApp = result.app;
+      installationId = result.installationId;
+      console.info("🐙 Successfully authenticated with GitHub");
+    } catch (error) {
+      console.warn("👎 Failed to authenticate with GitHub:\n", error);
+    }
   }
 
-  if (!githubApp || installationId) {
+  if (!githubApp || !installationId) {
     throw new Error(
       "Failed to initialize GitHub integration -- did you provide GitHub credential env credentialss"
     );
@@ -179,6 +148,8 @@ export async function processJobJobrunnerCleanupScript(
       installationId,
     }
   );
+
+  job.updateProgress(25);
 
   // create result
   const result = createOutput(
@@ -211,7 +182,7 @@ export async function processJobJobrunnerCleanupScript(
         },
         owner: owner,
         repo: repo,
-        path: `packages/src/jobrunner/logs/${Date.now()}_${
+        path: `packages/server/src/jobrunner/logs/${Date.now()}_${
           match.groups.name
         }.log.js`,
         message: `Test commit ${new Date()}`,
@@ -229,10 +200,11 @@ export async function processJobJobrunnerCleanupScript(
     return createResponse.data.commit.html_url;
   })();
 
+  job.updateProgress(50);
+
   const sourceDeleteCommitUrl = await (async function deleteFile() {
     // get sha of source to delete
-    // TODO: put source here
-    const sourceFilePath = "package.json"; // for now
+    const sourceFilePath = job.data.filename;
     const sourceResponse = await request(
       "GET /repos/:owner/:repo/contents/:path",
       {
@@ -252,6 +224,8 @@ export async function processJobJobrunnerCleanupScript(
         `Problem getting sha of source: ${JSON.stringify(status, null, 2)}`
       );
     }
+
+    job.updateProgress(75);
 
     // delete file from branch
     const deleteResponse = await request(
@@ -277,7 +251,7 @@ export async function processJobJobrunnerCleanupScript(
 
     return deleteResponse.data.commit.html_url;
   })();
-
+  job.updateProgress(100);
   return {
     kind: JobKind.JobrunnerCleanupScript,
     sourceDeleteCommitUrl,

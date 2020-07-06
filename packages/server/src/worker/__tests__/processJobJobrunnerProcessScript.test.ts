@@ -328,7 +328,7 @@ describe("processJobJobrunnerProcessScript.ts", () => {
         repository: jobData.repository,
         commit: jobData.commit,
         processJobId: job.id,
-        nodeScript: result.source,
+        nodeScript: result.nodeScript,
       }
     );
     expect(result.nodeScript).toEqual("some fake js");
